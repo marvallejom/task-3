@@ -1,12 +1,12 @@
 #==============================================================================#
 # Autores: Maria Vallejo, Andrea Cortes, Miguel Castillo
 # # Fecha elaboracion:18 de mayo de 2021
-# Ultima modificacion: 08 de junio de 2021
+# Ultima modificacion: 10 de junio de 2021
 # Version de R: 4.0.3
 # TALLER B
 #==============================================================================#
 #Se cargan las librerias
-pacman::p_load(tidyverse,sf,raster,coefplot,outreg)
+#pacman::p_load(tidyverse,sf,raster,coefplot,outreg, here, skimr, viridis, gapmindere)
 #==============================================================================#
 #1.DATOS ESPACIALES
 #1.1 Importar datos espaciales
@@ -35,6 +35,74 @@ for(i in 1:nrow(c_poblado)){
   }
 }
 c_poblado=c_poblado[posiciones_a_dejar,]
+
+#1.2.Atributos de los objetos=========================================================================#
+skim(c_poblado)
+skim(depto)
+skim(mapmuse)
+skim(c_medico)
+skim(via)
+#Para explorar los objetos cargados se usa skim para conocer la descripción.
+
+#1.3. Geometria del objeto=========================================================================#
+
+#1.3.1=========================================================================#
+
+st_bbox(c_poblado)
+st_crs(c_poblado)
+
+st_bbox(via)
+st_crs(via)
+
+st_bbox(depto)
+st_crs(depto)
+
+st_bbox(mapmuse)
+st_crs(mapmuse)
+
+st_bbox(c_medico)
+st_crs(c_medico)
+
+#se obtienen las coordenadas y el CRS de los objetos del 1.1
+
+#1.3.2=========================================================================#
+
+c_poblado = st_transform(c_poblado, "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+c_medico = st_transform(c_medico, "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+depto = st_transform(depto, "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+mapmuse = st_transform(mapmuse, "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+via = st_transform(via, "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+puntos = st_transform(puntos, "+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+
+# Se muestra el CRS de los objetos
+
+# 1.4. Operaciones geométricas
+
+#1.4.1=========================================================================#
+
+mapmuse=mapmuse[depto,]
+mapmuse=st_intersection(mapmuse, depto)
+ggplot() + geom_sf (data=mapmuse[depto,], col="blue") + geom_sf(data=depto, fill=NA, col="yellow") + theme_bw()
+
+#1.4.2=========================================================================#
+
+len_vias = st_intersection(vias,c_poblados %>% subset(cod_dane == 54001)) %>% st_length()
+sample(c_poblado$codmopio,1)
+
+# 1.5 Pintar mapas
+
+#1.5.1=========================================================================#
+
+mapa=leaflet() %>% addTiles() %>% addCircleMarkers(data=puntos %>% st_transform(.,4326))
+
+#1.5.2=========================================================================#
+
+mapa2=ggplot(puntos%>% st_transform(.,4326), col="green") + geom_sf(fill="blue", alpha=0.4, col="blue", size=1) +
+  geom_sf(data=depto, fill=NA, col="red") + themebw()+north(puntos%>% st_transform(.,4326)) + scale_fill_continuous(low="##B2182B",high="#2166AC")
+
+ggsave(plot = mapa2, file = "mapa.pdf")
+
+
 
 #2.REGRESIONES==================================================================#
 mapmuse=read_rds('data/output/f_mapmuse.rds')
