@@ -161,14 +161,14 @@ class(myhtml)
 
 #3.2.Extraer título de la página==================================================#
 
-myhtml %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div/title')
-myhtml %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div/title') %>% 
+myhtml %>% html_nodes(xpath = '//*[@id="firstHeading"]')
+myhtml %>% html_nodes(xpath = '//*[@id="firstHeading"]') %>% 
   class()
-texto = myhtml %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div/title') %>% 
+texto = myhtml %>% html_nodes(xpath = '//*[@id="firstHeading"]') %>% 
   html_text() # Convertir en texto
 texto
 
 #3.3.Extraer tabla de departamentos==================================================#
-tables <- content %>% html_table(fill = TRUE)
-first_table <- tables[[1]]
-
+tables <- myhtml %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div[1]/table[3]')%>%html_table()
+tables <- tables[[1]]
+tables
