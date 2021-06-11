@@ -169,4 +169,6 @@ texto = myhtml %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div/title') %>
 texto
 
 #3.3.Extraer tabla de departamentos==================================================#
+tables <- content %>% html_table(fill = TRUE)
+first_table <- tables[[1]]
 
