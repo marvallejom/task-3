@@ -6,7 +6,7 @@
 # TALLER B
 #==============================================================================#
 #Se cargan las librerias
-#pacman::p_load(tidyverse,sf,raster,coefplot,outreg, here, skimr, viridis, gapmindere)
+pacman::p_load(tidyverse,sf,raster,coefplot,outreg, here, skimr, viridis, gapmindere, XML, rvest, xml2)
 #==============================================================================#
 #1.DATOS ESPACIALES
 #1.1 Importar datos espaciales
@@ -147,5 +147,26 @@ coefplot(model=logit, coefficients=c("dist_cmedico"),xlab="efecto marginal")
 jpeg("Gráfica de efecto marginal para Probit.jpeg")
 coefplot(model=probit, coefficients=c("dist_cmedico"),xlab="efecto marginal")
 
+#3.WEB-SCRAPING==================================================================#
+#3.1.Extraer HTML=========================================================#
+require(pacman)
+p_load(tidyverse,XML,rvest,xml2)
 
+
+myurl = "https://es.wikipedia.org/wiki/Departamentos_de_Colombia"
+
+myhtml = read_html(myurl)
+class(myhtml)
+
+
+#3.2.Extraer título de la página==================================================#
+
+myhtml %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div/title')
+myhtml %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div/title') %>% 
+  class()
+texto = myhtml %>% html_nodes(xpath = '//*[@id="mw-content-text"]/div/title') %>% 
+  html_text() # Convertir en texto
+texto
+
+#3.3.Extraer tabla de departamentos==================================================#
 
